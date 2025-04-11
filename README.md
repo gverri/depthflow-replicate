@@ -1,48 +1,62 @@
-# DepthFlow on Replicate - Phase 2
+# DepthFlow on Replicate
 
-This is an incremental implementation of the [DepthFlow](https://github.com/BrokenSource/DepthFlow) project on Replicate. This version incorporates the basic GLSL shader rendering with simplified depth map generation.
+This is an implementation of the [DepthFlow](https://github.com/BrokenSource/DepthFlow) project on Replicate, providing 3D parallax animations from static images.
 
-## Current Implementation
+## Features
 
-This version includes:
+This implementation includes:
 
 1. EGL context creation for headless GPU rendering
-2. Basic GLSL shader for parallax depth effects
-3. Simple depth map generation from image grayscale
-4. Basic animation effects (orbital, zoom, horizontal)
-5. GIF output generation
+2. Multiple depth estimation models (DepthAnything, Marigold, ZoeDepth, etc.)
+3. Various animation presets (orbital, dolly, zoom, focus, parallax)
+4. Output in GIF or MP4 format
+5. Configurable animation parameters
 
 ## Input Parameters
 
 - `image`: Input image for applying the 3D effect
-- `effect_type`: Type of 3D effect (choices: orbital, zoom, horizontal)
-- `depth_strength`: Strength of the depth effect (default: 0.05, range: 0.01-0.2)
-- `num_frames`: Number of frames to render (default: 30, range: 10-120)
+- `depth_model`: Depth estimation model (choices: anything2, anything1, depthpro, marigold, zoedepth)
+- `animation_preset`: Animation style (choices: orbital, dolly, zoom, focus, parallax)
+- `depth_strength`: Strength of the depth effect (default: 0.5, range: 0.1-1.0)
+- `frames`: Number of frames to render (default: 48, range: 24-120)
+- `fps`: Frames per second (default: 24, range: 12-60)
+- `output_format`: Output format (choices: mp4, gif)
 
 ## How It Works
 
-1. The input image is processed to create a simple depth map based on image contrast
-2. ModernGL with EGL backend is used to render frames using the depth map
-3. A GLSL shader applies the parallax effect based on the depth information
-4. Frames are combined into an animated GIF
+1. The input image is processed by a depth estimation model
+2. The DepthFlow library creates a 3D scene from the image and depth map
+3. The selected animation preset is applied to the scene
+4. Frames are rendered using GPU acceleration via EGL
+5. Output is encoded as GIF or MP4
 
 ## Technical Details
 
 This implementation uses:
 - ModernGL with EGL for GPU-accelerated rendering
-- OpenCV for basic image processing
-- PyTorch for CUDA verification (future depth models)
-- GLSL shaders for the parallax effect
+- Multiple state-of-the-art depth estimation models
+- BrokenSource's DepthFlow and ShaderFlow libraries
+- NVIDIA GPU acceleration for rendering and depth estimation
 
-## Next Steps
+## Depth Models
 
-The next phase will implement:
-1. Advanced depth estimation models (DepthAnything, ZoeDepth, etc.)
-2. Higher quality animation techniques
-3. Video output with improved frame interpolation
-4. Additional camera motion effects
+- **DepthAnything V2**: Latest Depth Anything model (fast, high quality)
+- **DepthAnything V1**: Original Depth Anything model
+- **DepthPro**: Specialized depth estimation model
+- **Marigold**: Diffusion-based depth estimator
+- **ZoeDepth**: High-quality depth with metric scaling
+
+## Animation Presets
+
+- **Orbital**: Camera rotating around the subject
+- **Dolly**: Camera moving forward/backward
+- **Zoom**: Smooth zoom effect
+- **Focus**: Depth-based focus/defocus effect
+- **Parallax**: Classic parallax motion effect
 
 ## References
 
-- Original DepthFlow repository: https://github.com/BrokenSource/DepthFlow
-- Replicate documentation: https://replicate.com/docs/guides/push-a-model
+- DepthFlow: https://github.com/BrokenSource/DepthFlow
+- ShaderFlow: https://github.com/BrokenSource/ShaderFlow
+- BrokenSource: https://github.com/BrokenSource/BrokenSource
+- Replicate: https://replicate.com/docs/guides/push-a-model
