@@ -1,0 +1,3 @@
+moderngl==5.8.2
+glcontext==2.5.0
+PyOpenGL
