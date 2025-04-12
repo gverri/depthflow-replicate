@@ -141,12 +141,12 @@ class Predictor(BasePredictor):
 
         # Set isometric effect if requested
         if isometric > 0:
-            scene.set(
+            scene.config.animation.add(Animation.Set(
                 target=self.Target.Isometric,
                 value=isometric
-            )
+            ))
 
-        # Add the animation preset using the direct scene methods
+        # Add the animation preset using the scene methods
         if animation_preset == "orbital":
             scene.orbital(intensity=depth_strength)
         elif animation_preset == "dolly":
@@ -154,9 +154,14 @@ class Predictor(BasePredictor):
         elif animation_preset == "zoom":
             scene.zoom(intensity=depth_strength)
         elif animation_preset == "focus":
-            scene.focus()
+            # Set focus point directly since there's no focus() method
+            scene.config.animation.add(Animation.Set(
+                target=self.Target.Focus,
+                value=0.5
+            ))
         elif animation_preset == "parallax":
-            scene.parallax(intensity=depth_strength)
+            # Use horizontal motion as a substitute for parallax
+            scene.horizontal(intensity=depth_strength)
         elif animation_preset == "vertical":
             scene.vertical(intensity=depth_strength)
         elif animation_preset == "horizontal":

@@ -1,2 +1,4 @@
 .cog
 .cog/tmp
+# Ignore the DepthFlow source code directory (for reference only)
+.depthflow-source/
