@@ -8,7 +8,7 @@ import moderngl
 from cog import BasePredictor, Input, Path
 # Import core DepthFlow modules
 from DepthFlow.Scene import DepthScene
-from DepthFlow.Animation import Actions, Target, AnimationSet
+from DepthFlow.Animation import Animation, Target
 from Broken.Externals.Depthmap import (
 				DepthAnythingV1,
 				DepthAnythingV2,
@@ -46,12 +46,10 @@ class Predictor(BasePredictor):
         # Initialize DepthFlow modules
         print("Testing DepthFlow imports...")
         self.has_all_models = False
-        self.has_basic_depthflow = False
 
         # Store references to modules
         self.DepthScene = DepthScene
-        self.Actions = Actions
-        self.AnimationSet = AnimationSet
+        self.Animation = Animation
         self.Target = Target
         self.DepthAnythingV2 = DepthAnythingV2
         self.DepthAnythingV1 = DepthAnythingV1
@@ -103,14 +101,6 @@ class Predictor(BasePredictor):
             default=0.0,
             ge=0.0,
             le=1.0
-        ),
-        postfx_blur: bool = Input(
-            description="Enable depth-of-field blur effect",
-            default=False
-        ),
-        postfx_vignette: bool = Input(
-            description="Enable vignette effect",
-            default=False
         )
     ) -> Path:
         """Generate a 3D animation with depth effect using the DepthFlow library"""
@@ -146,64 +136,37 @@ class Predictor(BasePredictor):
 
         # Set up the animation preset
         print(f"Setting up animation preset: {animation_preset}")
-        if self.AnimationSet:
-            # Clear any existing animations
-            scene.config.animation.clear()
 
-            # Add state settings (post-processing effects)
-            scene.config.animation.add(self.Actions.State(
-                blur_enable=postfx_blur,
-                vignette_enable=postfx_vignette,
-                depth_strength=depth_strength,
-            ))
+        # Set depth strength
+        scene.state.depth_strength = depth_strength
 
-            # Set isometric effect if requested
-            if isometric > 0:
-                scene.config.animation.add(self.Actions.Set(
-                    target=self.Target.Isometric,
-                    value=isometric
-                ))
+        # Set isometric effect if requested
+        if isometric > 0:
+            scene.set(
+                target=self.Target.Isometric,
+                value=isometric
+            )
 
-            # Add the animation preset
-            if animation_preset == "orbital":
-                scene.config.animation.add(self.Actions.Orbital(intensity=depth_strength))
-            elif animation_preset == "dolly":
-                scene.config.animation.add(self.Actions.Dolly(intensity=depth_strength))
-            elif animation_preset == "zoom":
-                scene.config.animation.add(self.Actions.Zoom(intensity=depth_strength))
-            elif animation_preset == "focus":
-                scene.config.animation.add(self.Actions.Focus())
-            elif animation_preset == "parallax":
-                scene.config.animation.add(self.Actions.Parallax(intensity=depth_strength))
-            elif animation_preset == "vertical":
-                scene.config.animation.add(self.Actions.Vertical(intensity=depth_strength))
-            elif animation_preset == "horizontal":
-                scene.config.animation.add(self.Actions.Horizontal(intensity=depth_strength))
-            elif animation_preset == "circle":
-                scene.config.animation.add(self.Actions.Circle(intensity=depth_strength))
-            else:
-                # Default to Orbital animation if none specified
-                scene.config.animation.add(self.Actions.Orbital(intensity=depth_strength))
+        # Add the animation preset
+        if animation_preset == "orbital":
+            scene.orbital(intensity=depth_strength)
+        elif animation_preset == "dolly":
+            scene.dolly(intensity=depth_strength)
+        elif animation_preset == "zoom":
+            scene.zoom(intensity=depth_strength)
+        elif animation_preset == "focus":
+            scene.focus()
+        elif animation_preset == "parallax":
+            scene.parallax(intensity=depth_strength)
+        elif animation_preset == "vertical":
+            scene.vertical(intensity=depth_strength)
+        elif animation_preset == "horizontal":
+            scene.horizontal(intensity=depth_strength)
+        elif animation_preset == "circle":
+            scene.circle(intensity=depth_strength)
         else:
-            print("Warning: AnimationSet module not available, using basic configuration")
-            # Manual state configuration if Actions module isn't available
-            scene.state.depth.strength = depth_strength
-            scene.state.isometric = isometric
-            scene.state.blur_enable = postfx_blur
-            scene.state.vignette_enable = postfx_vignette
-
-            # Basic animation using offset parameters
-            if animation_preset == "orbital" or animation_preset == "circle":
-                scene.update = lambda: setattr(
-                    scene, "offset_xy",
-                    (depth_strength * np.cos(scene.cycle), depth_strength * np.sin(scene.cycle))
-                )
-            elif animation_preset == "parallax" or animation_preset == "horizontal":
-                scene.update = lambda: setattr(scene, "offset_x", depth_strength * np.sin(scene.cycle))
-            elif animation_preset == "vertical":
-                scene.update = lambda: setattr(scene, "offset_y", depth_strength * np.sin(scene.cycle))
-            elif animation_preset == "zoom":
-                scene.update = lambda: setattr(scene, "height", 0.1 + 0.05 * depth_strength * np.sin(scene.cycle))
+            # Default to Orbital animation if none specified
+            scene.orbital(intensity=depth_strength)
 
         # Set rendering parameters
         scene.fps = fps

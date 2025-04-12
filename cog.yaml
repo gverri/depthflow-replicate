@@ -28,7 +28,7 @@ build:
     help: Install PyTorch with CUDA support
 
   - command: 'pip install broken-source==0.9.0.dev1 shaderflow==0.9.0.dev1 depthflow==0.9.0.dev1'
-    help: Install DepthFlow core packages without optional GUI dependencies
+    help: Install DepthFlow core packages
 
   - command: mkdir -p /usr/share/glvnd/egl_vendor.d && echo '{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0"}}' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json
     help: Configure NVIDIA GPU OpenGL acceleration in headless environment
