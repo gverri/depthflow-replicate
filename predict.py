@@ -137,8 +137,7 @@ class Predictor(BasePredictor):
         # Set up the animation preset
         print(f"Setting up animation preset: {animation_preset}")
 
-        # Set depth strength
-        scene.state.depth_strength = depth_strength
+        # We'll use the depth_strength parameter directly in the animation methods
 
         # Set isometric effect if requested
         if isometric > 0:
@@ -147,7 +146,7 @@ class Predictor(BasePredictor):
                 value=isometric
             )
 
-        # Add the animation preset
+        # Add the animation preset using the direct scene methods
         if animation_preset == "orbital":
             scene.orbital(intensity=depth_strength)
         elif animation_preset == "dolly":
@@ -175,7 +174,27 @@ class Predictor(BasePredictor):
         # Run the animation rendering
         print(f"Rendering {frames} frames with {animation_preset} effect...")
         start_time = time.time()
-        scene.main(output=output_path)
+        
+        # Handle different output formats
+        if output_format == "gif":
+            # For GIF output, we need to ensure proper encoding
+            # First render to MP4, then convert to GIF
+            mp4_path = os.path.join(temp_dir, "output.mp4")
+            scene.main(output=mp4_path)
+            
+            # Convert MP4 to GIF using ffmpeg
+            print("Converting MP4 to GIF...")
+            gif_command = [
+                "ffmpeg", 
+                "-i", mp4_path, 
+                "-vf", "fps=15,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", 
+                "-loop", "0", 
+                output_path
+            ]
+            subprocess.run(gif_command, check=True)
+        else:
+            # For MP4, use the direct output
+            scene.main(output=output_path)
 
         render_time = time.time() - start_time
         print(f"DepthFlow animation rendered in {render_time:.2f} seconds")
