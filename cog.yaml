@@ -1,10 +1,8 @@
 build:
  gpu: true
- python_version: '3.10'
+ python_version: '3.11'
  system_packages:
   - libgl1-mesa-glx
-  - libegl1-mesa
-  - libegl1-mesa-dev
   - libglvnd-dev
   - libglvnd0
   - libglib2.0-0
@@ -12,12 +10,7 @@ build:
   - cmake
   - ffmpeg
   - git
-  - libxrandr-dev
-  - libxinerama-dev
-  - libxcursor-dev
-  - libxi-dev
   - pkg-config
-  - python3-dev
   - libfluidsynth-dev
   - fluidsynth
  python_requirements: requirements.txt
@@ -30,18 +23,12 @@ build:
 
   - command: pip install moderngl==5.8.2 glcontext==2.5.0 PyOpenGL
     help: Install minimal moderngl dependencies
-  
-  - command: "pip install torch>=2.0.0 torchvision>=0.15.0 --index-url https://download.pytorch.org/whl/cu118"
+
+  - command: 'pip install torch>=2.0.0 torchvision>=0.15.0 --index-url https://download.pytorch.org/whl/cu118'
     help: Install PyTorch with CUDA support
 
-  - command: "pip install aenum arrow attrs cachetools dill diskcache distro dotmap loguru ordered-set platformdirs pydantic pyfiglet python-dotenv requests-cache rich scipy thefuzz toml transformers typer userpath validators xxhash"
-    help: Install core dependencies directly
-
-  - command: "pip install --no-deps broken-source==0.9.0.dev1 shaderflow==0.9.0.dev1 depthflow==0.9.0.dev1"
+  - command: 'pip install broken-source==0.9.0.dev1 shaderflow==0.9.0.dev1 depthflow==0.9.0.dev1'
     help: Install DepthFlow core packages without optional GUI dependencies
-
-  - command: "pip install moderngl==5.12.0 moderngl-window==3.1.1 glcontext==3.0.0 numpy-quaternion==2024.0.8 pyglm==2.8.2 opensimplex==0.4.5.1 watchdog==6.0.0"
-    help: Install other essential dependencies for rendering
 
   - command: mkdir -p /usr/share/glvnd/egl_vendor.d && echo '{"file_format_version":"1.0.0","ICD":{"library_path":"libEGL_nvidia.so.0"}}' > /usr/share/glvnd/egl_vendor.d/10_nvidia.json
     help: Configure NVIDIA GPU OpenGL acceleration in headless environment
