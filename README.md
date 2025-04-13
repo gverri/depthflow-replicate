@@ -7,44 +7,44 @@ This is an implementation of the [DepthFlow](https://github.com/BrokenSource/Dep
 This implementation includes:
 
 1. EGL context creation for headless GPU rendering
-2. Multiple depth estimation models (DepthAnything, Marigold, ZoeDepth, etc.)
-3. Various animation presets (orbital, dolly, zoom, focus, parallax)
-4. Output in GIF or MP4 format
-5. Configurable animation parameters
+2. State-of-the-art depth estimation using DepthAnythingV2
+3. Various animation presets (orbital, dolly, zoom, focus, parallax, vertical, horizontal, circle)
+4. Output in MP4 format
+5. Configurable animation parameters for depth effects and post-processing
 
 ## Input Parameters
 
 - `image`: Input image for applying the 3D effect
-- `depth_model`: Depth estimation model (choices: anything2, anything1, depthpro, marigold, zoedepth)
-- `animation_preset`: Animation style (choices: orbital, dolly, zoom, focus, parallax)
+- `animation_preset`: Animation style (choices: orbital, dolly, zoom, focus, parallax, vertical, horizontal, circle)
+- `loop_animation`: Loop the animation instead of once-through (default: true)
 - `depth_strength`: Strength of the depth effect (default: 0.5, range: 0.1-1.0)
-- `frames`: Number of frames to render (default: 48, range: 24-120)
 - `fps`: Frames per second (default: 24, range: 12-60)
-- `output_format`: Output format (choices: mp4, gif)
+- `duration`: Video duration in seconds (default: 2.0, range: 1.0-10.0)
+- `isometric`: Isometric effect strength (default: 0.0, range: 0.0-1.0)
+- `steady`: Depth plane anchor point (0.0=background fixed, 1.0=foreground fixed) (default: 0.3)
+- `zoom`: Camera zoom factor (default: 1.0, range: 0.5-1.5)
+- `vignette`: Apply vignette effect (default: false)
+- `blur`: Apply depth of field blur effect (default: false)
+- `blur_intensity`: Blur effect intensity if blur is enabled (default: 1.0, range: 0.1-2.0)
+- `color_enhance`: Apply color enhancement (default: false)
+- `saturation`: Image saturation adjustment if color enhance is enabled (default: 1.2, range: 0.5-2.0)
+- `contrast`: Image contrast adjustment if color enhance is enabled (default: 1.1, range: 0.5-2.0)
 
 ## How It Works
 
-1. The input image is processed by a depth estimation model
+1. The input image is processed by the DepthAnythingV2 depth estimation model
 2. The DepthFlow library creates a 3D scene from the image and depth map
 3. The selected animation preset is applied to the scene
 4. Frames are rendered using GPU acceleration via EGL
-5. Output is encoded as GIF or MP4
+5. Output is encoded as MP4
 
 ## Technical Details
 
 This implementation uses:
 - ModernGL with EGL for GPU-accelerated rendering
-- Multiple state-of-the-art depth estimation models
+- DepthAnythingV2 for high-quality depth estimation
 - BrokenSource's DepthFlow and ShaderFlow libraries
 - NVIDIA GPU acceleration for rendering and depth estimation
-
-## Depth Models
-
-- **DepthAnything V2**: Latest Depth Anything model (fast, high quality)
-- **DepthAnything V1**: Original Depth Anything model
-- **DepthPro**: Specialized depth estimation model
-- **Marigold**: Diffusion-based depth estimator
-- **ZoeDepth**: High-quality depth with metric scaling
 
 ## Animation Presets
 
@@ -53,6 +53,9 @@ This implementation uses:
 - **Zoom**: Smooth zoom effect
 - **Focus**: Depth-based focus/defocus effect
 - **Parallax**: Classic parallax motion effect
+- **Vertical**: Vertical camera movement
+- **Horizontal**: Horizontal camera movement
+- **Circle**: Circular camera movement
 
 ## References
 
